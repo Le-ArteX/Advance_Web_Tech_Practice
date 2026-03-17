@@ -1,0 +1,7 @@
+POST http://localhost:3000/course
+Content-Type: application/json
+
+{
+  "name": "NEstJs",
+  "code": "CS301"
+}
