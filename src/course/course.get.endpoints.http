@@ -1,0 +1,5 @@
+GET http://localhost:3000/course
+
+GET http://localhost:3000/course/101
+
+GET http://localhost:3000/course/2/3
