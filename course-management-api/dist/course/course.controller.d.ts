@@ -1,13 +1,39 @@
 import { CourseService } from './course.service';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
 export declare class CourseController {
     private readonly courseService;
     constructor(courseService: CourseService);
-    getCourse(): string;
-    getCourseById(id: string): string;
-    getCoursePosts(id: string, postId: string, name?: string): String;
-    getCourseByTwoIds(id1: string, id2: string): string;
-    createCourse(): string;
-    updateCourseById(id: string): string;
-    patchCourseById(id: string): string;
-    deleteCourseById(id: string): string;
+    findAll(): {
+        message: string;
+        data: never[];
+    };
+    findOne(id: string): {
+        message: string;
+        id: string;
+    };
+    create(dto: CreateCourseDto): {
+        message: string;
+        data: CreateCourseDto;
+    };
+    update(id: string, dto: UpdateCourseDto): {
+        message: string;
+        id: string;
+        data: UpdateCourseDto;
+    };
+    patch(id: string, dto: UpdateCourseDto): {
+        message: string;
+        id: string;
+        updatedFields: string[];
+    };
+    remove(id: string): {
+        message: string;
+        id: string;
+    };
+    uploadFile(id: string, file: Express.Multer.File): {
+        message: string;
+        courseId: string;
+        filename: string;
+        path: string;
+    };
 }

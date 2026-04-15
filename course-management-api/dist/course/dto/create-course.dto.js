@@ -16,20 +16,18 @@ class CreateCourseDto {
     name;
     code;
     instructor;
-    credit;
+    credits;
     description;
 }
 exports.CreateCourseDto = CreateCourseDto;
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(3),
-    (0, class_validator_1.MaxLength)(50),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateCourseDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateCourseDto.prototype, "code", void 0);
 __decorate([
@@ -43,7 +41,7 @@ __decorate([
     (0, class_validator_1.Max)(6),
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
-], CreateCourseDto.prototype, "credit", void 0);
+], CreateCourseDto.prototype, "credits", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),

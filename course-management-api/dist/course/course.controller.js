@@ -14,40 +14,29 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 const course_service_1 = require("./course.service");
+const create_course_dto_1 = require("./dto/create-course.dto");
+const update_course_dto_1 = require("./dto/update-course.dto");
 let CourseController = class CourseController {
     courseService;
     constructor(courseService) {
         this.courseService = courseService;
     }
-    getCourse() {
-        return this.courseService.getCourse();
+    findAll() { return this.courseService.getCourse(); }
+    findOne(id) { return this.courseService.getCourseById(id); }
+    create(dto) { return this.courseService.createCourse(dto); }
+    update(id, dto) {
+        return this.courseService.updateCourseById(id, dto);
     }
-    getCourseById(id) {
-        return this.courseService.getCourseById(parseInt(id));
+    patch(id, dto) {
+        return this.courseService.patchCourseById(id, dto);
     }
-    getCoursePosts(id, postId, name) {
-        if (name != undefined) {
-            return `course posts for course ${id} and post ${postId} with name ${name}`;
-        }
-        else {
-            return `course posts for course ${id} and post ${postId}`;
-        }
-    }
-    getCourseByTwoIds(id1, id2) {
-        return `get course id1 ${id1} and id2 ${id2} from service`;
-    }
-    createCourse() {
-        return this.courseService.createCourse();
-    }
-    updateCourseById(id) {
-        return `update course id ${id} from service`;
-    }
-    patchCourseById(id) {
-        return `patch course id ${id} from service`;
-    }
-    deleteCourseById(id) {
-        return `delete course id ${id} from service`;
+    remove(id) { return this.courseService.deleteCourseById(id); }
+    uploadFile(id, file) {
+        return this.courseService.uploadCourseMaterial(id, file);
     }
 };
 exports.CourseController = CourseController;
@@ -55,59 +44,69 @@ __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "getCourse", null);
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "getCourseById", null);
-__decorate([
-    (0, common_1.Get)(':id/:postId'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Param)('postId')),
-    __param(2, (0, common_1.Query)('name')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "getCoursePosts", null);
-__decorate([
-    (0, common_1.Get)(':id1/:id2'),
-    __param(0, (0, common_1.Param)('id1')),
-    __param(1, (0, common_1.Param)('id2')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "getCourseByTwoIds", null);
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "createCourse", null);
+    __metadata("design:paramtypes", [create_course_dto_1.CreateCourseDto]),
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "create", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "updateCourseById", null);
+    __metadata("design:paramtypes", [String, update_course_dto_1.UpdateCourseDto]),
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "update", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "patchCourseById", null);
+    __metadata("design:paramtypes", [String, update_course_dto_1.UpdateCourseDto]),
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "patch", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", String)
-], CourseController.prototype, "deleteCourseById", null);
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)(':id/upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                cb(null, `${uniqueSuffix}${(0, path_1.extname)(file.originalname)}`);
+            },
+        }),
+        fileFilter: (req, file, cb) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
+                return cb(new Error('Only .jpg, .jpeg, .png, and .pdf files are allowed!'), false);
+            }
+            cb(null, true);
+        },
+        limits: { fileSize: 2 * 1024 * 1024 }
+    })),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "uploadFile", null);
 exports.CourseController = CourseController = __decorate([
     (0, common_1.Controller)('course'),
     __metadata("design:paramtypes", [course_service_1.CourseService])

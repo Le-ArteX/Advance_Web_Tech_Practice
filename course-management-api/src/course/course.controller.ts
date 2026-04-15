@@ -1,57 +1,55 @@
-import { Controller,Get,Post,Patch,Delete,Put,Param,Query } from '@nestjs/common';
-import { CourseService} from './course.service';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { CourseService } from './course.service';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Controller('course')
 export class CourseController {
+    constructor(private readonly courseService: CourseService) { }
 
-    constructor(private readonly courseService: CourseService){}
     @Get()
-    public getCourse(): string{
-        return this.courseService.getCourse();
-    }
+    findAll() { return this.courseService.getCourse(); }
 
     @Get(':id')
-    public getCourseById(@Param('id') id: string): string {
-        return this.courseService.getCourseById(parseInt(id));
-    }
-
-   
-
-     @Get(':id/:postId')
-    getCoursePosts(
-    @Param('id') id: string,
-    @Param('postId') postId: string,
-    @Query('name') name?: string,): String {
-    if (name != undefined) {
-      return `course posts for course ${id} and post ${postId} with name ${name}`;
-    } else {
-      return `course posts for course ${id} and post ${postId}`;
-    }
-  }
-   @Get(':id1/:id2')
-    public getCourseByTwoIds(@Param('id1') id1: string, @Param('id2') id2: string): string {
-        return `get course id1 ${id1} and id2 ${id2} from service`;
-    }
+    findOne(@Param('id') id: string) { return this.courseService.getCourseById(id); }
 
     @Post()
-    public createCourse(): string{
-        return this.courseService.createCourse();
-    }
+    create(@Body() dto: CreateCourseDto) { return this.courseService.createCourse(dto); }
 
     @Put(':id')
-    
-    public updateCourseById(@Param('id') id: string): string{
-        return `update course id ${id} from service`
+    update(@Param('id') id: string, @Body() dto: UpdateCourseDto) {
+        return this.courseService.updateCourseById(id, dto);
     }
 
     @Patch(':id')
-    public patchCourseById(@Param('id') id: string): string{
-        return `patch course id ${id} from service`
+    patch(@Param('id') id: string, @Body() dto: UpdateCourseDto) {
+        return this.courseService.patchCourseById(id, dto);
     }
 
     @Delete(':id')
-    public deleteCourseById(@Param('id') id: string): string{
-        return `delete course id ${id} from service`
-    }
+    remove(@Param('id') id: string) { return this.courseService.deleteCourseById(id); }
 
+    @Post(':id/upload')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
+            },
+        }),
+        fileFilter: (req, file, cb) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
+                return cb(new Error('Only .jpg, .jpeg, .png, and .pdf files are allowed!'), false);
+            }
+            cb(null, true);
+        },
+        limits: { fileSize: 2 * 1024 * 1024 }
+    }))
+    uploadFile(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+        return this.courseService.uploadCourseMaterial(id, file);
+    }
 }
