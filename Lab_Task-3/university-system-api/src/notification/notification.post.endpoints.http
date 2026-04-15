@@ -1,0 +1,16 @@
+POST http://localhost:3000/notification/send
+Content-Type: application/json
+
+{
+  "StudentName": "John Doe",
+  "message": "You have been enrolled in a new course!"
+}
+POST http://localhost:3000/notification/check
+Content-Type: application/json
+
+{
+    "StudentName": "John Doe",
+    "courseId": "101"
+}
+
+
